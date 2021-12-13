@@ -1,46 +1,38 @@
 from random import randint
 
 class MillerRabin:
-    def decompose(n):
-        r = 0
-        while n % 2 == 0:
-            r += 1
-            n = n >> 1
-        return r, n
 
-    def testPrime(n, k=200):
-        # Known small prime numbers
+    def miller_test(n, k=40):
+        # Caso base: n < 3
         if n in (2,3):
             return True
-        # No number smaller than 2 is prime
+        # Números menores que 2 não são primos
         if n < 2:
             return False
-        # No even number other than 2 is prime
+        # 2 é o único par primo
         if n % 2 == 0:
             return False
 
-        # Write n as 2^r·d + 1 with d odd (by factoring out powers of 2 from n − 1)
-        r, d = MillerRabin.decompose(n - 1)
+        # Computar d e r de forma que d*2^r = n-1
+        r, d = 0, n - 1
+        while d % 2 == 0:
+            r += 1
+            d //= 2
 
-        # WitnessLoop: repeat k times:
         for _ in range(k):
-            # Pick a random integer a in the range [2, n − 2]
-            a = randint(2, n - 2)
-            # x ← a^d mod n
+            a = randint(2, n - 1)
+            
             x = pow(a, d, n)
-            # if x = 1 or x = n − 1 then continue WitnessLoop
-            if x in (1, n - 1):
-                continue
-            try:
-                # repeat r − 1 times:
-                for _ in range(r - 1):
-                    # x ← x^2 mod n
-                    x = pow(x, 2, n)
-                    # if x = n − 1 then continue WitnessLoop
-                    if x == n - 1:
-                        raise Exception()
-            except Exception as e:
-                continue
 
-            return False
+            if x == 1 or x == n - 1:
+                continue
+            
+            for _ in range(r - 1):
+                x = pow(x, 2, n)
+                if x == n - 1:
+                    break
+            
+            else:
+                return False
         return True
+        
