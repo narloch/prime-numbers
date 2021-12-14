@@ -14,7 +14,7 @@ class Fermat:
 
         for _ in range(k):
             a = randint(2, n - 2)
-            if pow(a, n - 1) % n != 1:
+            if pow(a, n - 1, n) != 1:
                 return False
 
         return True
